@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Navbar, Nav, Container, Image, Badge, Button } from 'react-bootstrap';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
@@ -12,40 +12,19 @@ export default function AppNavBar({ cartCount }) {
     const [profilePicture, setProfilePicture] = useState('https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png');
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem('ua_dark_mode') === 'true');
     const [navHistoryCount, setNavHistoryCount] = useState(0);
+    const initialPathRef = useRef(location.pathname);
 
-    // Increment count on navigation (tab click)
-    const handleTabClick = (targetPath) => {
-        if (targetPath !== location.pathname) {
-            setNavHistoryCount(count => count + 1);
+    useEffect(() => {
+        if (location.pathname !== initialPathRef.current) {
+            setNavHistoryCount(1);
+        } else {
+            setNavHistoryCount(0);
         }
-    };
+    }, [location.pathname]);
 
-    // Decrement count on back button
     const handleBack = () => {
-        if (navHistoryCount > 0) {
-            setNavHistoryCount(count => count - 1);
-            history.goBack();
-        }
+        history.push(initialPathRef.current);
     };
-
-    // Reset count if user reloads or lands directly
-    useEffect(() => {
-        setNavHistoryCount(0);
-        // eslint-disable-next-line
-    }, []); // run once on mount
-
-    const toggleDarkMode = () => {
-        setDarkMode(prev => {
-            const newMode = !prev;
-            localStorage.setItem('ua_dark_mode', newMode);
-            document.documentElement.classList.toggle('ua-dark-mode', newMode);
-            return newMode;
-        });
-    };
-
-    useEffect(() => {
-        document.documentElement.classList.toggle('ua-dark-mode', darkMode);
-    }, [darkMode]);
 
     useEffect(() => {
         if (user.id) {
@@ -63,6 +42,19 @@ export default function AppNavBar({ cartCount }) {
             .catch(err => console.error('Error fetching user details:', err));
         }
     }, [user.id]);
+
+    const toggleDarkMode = () => {
+        setDarkMode(prev => {
+            const newMode = !prev;
+            localStorage.setItem('ua_dark_mode', newMode);
+            document.documentElement.classList.toggle('ua-dark-mode', newMode);
+            return newMode;
+        });
+    };
+
+    useEffect(() => {
+        document.documentElement.classList.toggle('ua-dark-mode', darkMode);
+    }, [darkMode]);
 
     return (
         <Navbar
@@ -103,7 +95,7 @@ export default function AppNavBar({ cartCount }) {
                         }
                     </button>
                 </div>
-                <Navbar.Brand as={Link} to="/" className="fw-bold pro-navbar-brand" onClick={() => handleTabClick('/')}>
+                <Navbar.Brand as={Link} to="/" className="fw-bold pro-navbar-brand">
                     <span className="pro-navbar-logo">UA</span> Shop
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -114,7 +106,6 @@ export default function AppNavBar({ cartCount }) {
                             to="/products" 
                             active={location.pathname === '/products'}
                             className="pro-navbar-link"
-                            onClick={() => handleTabClick('/products')}
                         >
                             {user.isAdmin ? 'Admin Dashboard' : 'Products'}
                         </Nav.Link>
@@ -124,7 +115,7 @@ export default function AppNavBar({ cartCount }) {
                             <>
                                 {!user.isAdmin && (
                                     <>
-                                        <Nav.Link as={Link} to="/cart" className="position-relative mx-2 pro-navbar-link" onClick={() => handleTabClick('/cart')}>
+                                        <Nav.Link as={Link} to="/cart" className="position-relative mx-2 pro-navbar-link">
                                             <FaShoppingCart size={19} className="me-1" />
                                             {(cartCount > 0) && (
                                                 <Badge pill bg="danger" className="pro-cart-badge">
@@ -132,12 +123,12 @@ export default function AppNavBar({ cartCount }) {
                                                 </Badge>
                                             )}
                                         </Nav.Link>
-                                        <Nav.Link as={Link} to="/orders" className="mx-2 pro-navbar-link" onClick={() => handleTabClick('/orders')}>
+                                        <Nav.Link as={Link} to="/orders" className="mx-2 pro-navbar-link">
                                             Orders
                                         </Nav.Link>
                                     </>
                                 )}
-                                <Nav.Link as={Link} to="/profile" className="mx-2 pro-navbar-link" onClick={() => handleTabClick('/profile')}>
+                                <Nav.Link as={Link} to="/profile" className="mx-2 pro-navbar-link">
                                     <Image 
                                         src={profilePicture}
                                         roundedCircle
@@ -151,7 +142,7 @@ export default function AppNavBar({ cartCount }) {
                                         style={{ objectFit: 'cover' }}
                                     />
                                 </Nav.Link>
-                                <Nav.Link as={Link} to="/logout" className="mx-2 pro-navbar-link" onClick={() => handleTabClick('/logout')}>
+                                <Nav.Link as={Link} to="/logout" className="mx-2 pro-navbar-link">
                                     Logout
                                 </Nav.Link>
                             </>
@@ -162,7 +153,6 @@ export default function AppNavBar({ cartCount }) {
                                     to="/login" 
                                     active={location.pathname === '/login'}
                                     className="mx-2 pro-navbar-link"
-                                    onClick={() => handleTabClick('/login')}
                                 >
                                     Login
                                 </Nav.Link>
@@ -171,7 +161,6 @@ export default function AppNavBar({ cartCount }) {
                                     to="/register" 
                                     active={location.pathname === '/register'}
                                     className="mx-2 pro-navbar-link"
-                                    onClick={() => handleTabClick('/register')}
                                 >
                                     Register
                                 </Nav.Link>
