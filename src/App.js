@@ -26,7 +26,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [cartCount, setCartCount] = useState(0);
 
-  // This function fetches the cart count and can be passed to children
+
   const refreshCartCount = () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -63,7 +63,7 @@ export default function App() {
         } else {
           setUser({ id: null, isAdmin: null });
         }
-        refreshCartCount(); // Also fetch cart count after user details
+        refreshCartCount(); 
       })
       .catch(err => {
         console.error('Error fetching user details:', err);
@@ -75,7 +75,7 @@ export default function App() {
       setIsLoading(false);
       setCartCount(0);
     }
-    // eslint-disable-next-line
+
   }, []);
 
   if (isLoading) {
