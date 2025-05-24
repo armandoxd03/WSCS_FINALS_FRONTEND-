@@ -1,6 +1,7 @@
 import React from 'react';
 import Highlights from '../components/Highlights';
 import { Container, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
     return (
@@ -14,7 +15,8 @@ export default function Home() {
                         Products for everyone, everywhere
                     </div>
                     <Button
-                        href="/products"
+                        as={Link}
+                        to="/products"
                         className="browse-products-btn"
                         variant="success"
                     >
