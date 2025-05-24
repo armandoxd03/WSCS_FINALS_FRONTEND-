@@ -397,7 +397,6 @@ export default function AdminView() {
         </div>
     );
 
-    // Pro pagination numbers only, with color depending on active page
     const renderPagination = () => (
         <div className="pro-admin-pagination d-flex justify-content-center my-3">
             {Array.from({ length: totalPages }, (_, idx) => {

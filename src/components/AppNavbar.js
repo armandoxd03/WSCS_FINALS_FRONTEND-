@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Image, Badge, Button } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
-import { BsSunFill, BsMoonFill } from 'react-icons/bs'; // Simpler, round icons
+import { BsSunFill, BsMoonFill } from 'react-icons/bs';
 import UserContext from '../UserContext';
 
 export default function AppNavBar({ cartCount }) {
@@ -20,7 +20,7 @@ export default function AppNavBar({ cartCount }) {
         });
     };
 
-    // On mount, set the mode for all pages (html root for global dark)
+
     useEffect(() => {
         document.documentElement.classList.toggle('ua-dark-mode', darkMode);
     }, [darkMode]);

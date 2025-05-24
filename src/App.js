@@ -22,6 +22,7 @@ export default function App() {
     id: null,
     isAdmin: null
   });
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [isLoading, setIsLoading] = useState(true);
   const [cartCount, setCartCount] = useState(0);
 

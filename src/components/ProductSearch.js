@@ -106,7 +106,7 @@ const ProductSearch = () => {
         />
       </div>
 
-      <div className="form-group d-flex gap-2 mb-2 flex-wrap">
+      <div className="product-search-btn-group form-group d-flex gap-2 mb-2 flex-wrap">
         <Button
           variant="info"
           onClick={() => setShowSortModal(true)}
@@ -119,11 +119,11 @@ const ProductSearch = () => {
                 : sortBy.charAt(0).toUpperCase() + sortBy.slice(1)
           }
         </Button>
-        {/* Filter Button */}
+
         <Button variant="outline-secondary" onClick={handleOpenFilter}>
           Filter: <span className="fw-bold">${minPrice.toLocaleString()}</span> - <span className="fw-bold">${maxPrice.toLocaleString()}</span>
         </Button>
-        {/* Sort, Clear, Search all in the same row */}
+
         <Button className="btn btn-danger" onClick={handleClear}>
           Clear
         </Button>

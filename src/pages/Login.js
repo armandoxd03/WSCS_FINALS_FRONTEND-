@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Form, Button, Card, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Button, Card, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import UserContext from '../UserContext';
@@ -154,7 +154,22 @@ export default function LoginForm(props) {
                                     }
                                 }}
                             >
-                                {isLoading ? <Loading /> : 'Log In'}
+                                {isLoading
+                                    ? (
+                                        <>
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                style={{ marginRight: 8 }}
+                                            />
+                                            Logging In...
+                                        </>
+                                    )
+                                    : 'Log In'
+                                }
                             </Button>
                         </Form>
 
