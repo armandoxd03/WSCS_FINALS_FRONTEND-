@@ -14,6 +14,7 @@ export default function Register() {
     const [error1, setError1] = useState(true);
     const [error2, setError2] = useState(true);
     const [emailError, setEmailError] = useState("");
+    const [emailExistsError, setEmailExistsError] = useState("");
     const [mobileError, setMobileError] = useState("");
     const [mobileExistsError, setMobileExistsError] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -63,13 +64,14 @@ export default function Register() {
             mobileNo !== "" &&
             !mobileError &&
             !mobileExistsError &&
+            !emailExistsError &&
             !passwordError
         ) {
             setIsActive(true);
         } else {
             setIsActive(false);
         }
-    }, [email, password1, password2, firstName, lastName, mobileNo, mobileError, mobileExistsError, passwordError]);
+    }, [email, password1, password2, firstName, lastName, mobileNo, mobileError, mobileExistsError, emailExistsError, passwordError]);
 
     useEffect(() => {
         if (email === '' || password1 === '' || password2 === '') {
@@ -152,13 +154,15 @@ export default function Register() {
         try {
             const emailExists = await checkEmailExists(email);
             if (emailExists) {
-                setEmailError('Email already exists');
+                setEmailExistsError('Email already exists');
                 Swal.fire({
                     title: 'Email already exists',
                     icon: 'error',
                     text: 'Please use a different email address.',
                 });
                 return;
+            } else {
+                setEmailExistsError('');
             }
 
             const mobileExists = await checkMobileExists(mobileNo);
@@ -257,11 +261,13 @@ export default function Register() {
                                         onChange={e => {
                                             setEmail(e.target.value);
                                             setEmailError("");
+                                            setEmailExistsError("");
                                         }}
                                         required
-                                        isInvalid={!!emailError}
+                                        isInvalid={!!emailError || !!emailExistsError}
                                     />
                                     {emailError && <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>}
+                                    {emailExistsError && <Form.Control.Feedback type="invalid">{emailExistsError}</Form.Control.Feedback>}
                                 </Form.Group>
 
                                 <Form.Group controlId="mobileNo">
@@ -337,7 +343,7 @@ export default function Register() {
 
                             </Card.Body>
                             <Card.Footer>
-                                {isActive === true && !mobileError && !mobileExistsError && !passwordError && !passwordMatchError ?
+                                {isActive === true && !mobileError && !mobileExistsError && !emailExistsError && !passwordError && !passwordMatchError ?
                                     <Button
                                         variant="success"
                                         type="submit"
@@ -346,14 +352,24 @@ export default function Register() {
                                         Register
                                     </Button>
                                     :
-                                    error1 === true || error2 === true || mobileError || mobileExistsError || passwordError || passwordMatchError ?
+                                    error1 === true || error2 === true || mobileError || mobileExistsError || emailExistsError || passwordError || passwordMatchError ?
                                         <Button
                                             variant="danger"
                                             type="submit"
                                             disabled
                                             block
                                         >
-                                            {mobileError ? mobileError : mobileExistsError ? mobileExistsError : passwordError ? passwordError : passwordMatchError ? passwordMatchError : "Please enter your registration details"}
+                                            {mobileError
+                                                ? mobileError
+                                                : mobileExistsError
+                                                    ? mobileExistsError
+                                                    : emailExistsError
+                                                        ? emailExistsError
+                                                        : passwordError
+                                                            ? passwordError
+                                                            : passwordMatchError
+                                                                ? passwordMatchError
+                                                                : "Please enter your registration details"}
                                         </Button>
                                         :
                                         <Button
