@@ -259,8 +259,9 @@ export default function Register() {
                                             setEmailError("");
                                         }}
                                         required
+                                        isInvalid={!!emailError}
                                     />
-                                    {emailError && <Alert variant="danger" className="mt-2">{emailError}</Alert>}
+                                    {emailError && <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>}
                                 </Form.Group>
 
                                 <Form.Group controlId="mobileNo">
