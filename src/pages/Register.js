@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, Button, Row, Col, Card, Alert } from 'react-bootstrap';
+import { Form, Button, Row, Col, Card } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
