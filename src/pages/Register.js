@@ -15,12 +15,12 @@ export default function Register() {
     const [error2, setError2] = useState(true);
     const [emailError, setEmailError] = useState("");
     const [mobileError, setMobileError] = useState("");
+    const [mobileExistsError, setMobileExistsError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [passwordMatchError, setPasswordMatchError] = useState("");
     const [isActive, setIsActive] = useState(false);
     const [willRedirect, setWillRedirect] = useState(false);
 
-    // Validate mobile number input
     useEffect(() => {
         if (mobileNo === "") {
             setMobileError("");
@@ -33,7 +33,6 @@ export default function Register() {
         }
     }, [mobileNo]);
 
-    // Validate password length
     useEffect(() => {
         if (password1 === "" && password2 === "") {
             setPasswordError("");
@@ -44,7 +43,6 @@ export default function Register() {
         }
     }, [password1, password2]);
 
-    // Validate password match
     useEffect(() => {
         if (password2 && password1 !== password2) {
             setPasswordMatchError("Passwords do not match.");
@@ -53,7 +51,6 @@ export default function Register() {
         }
     }, [password1, password2]);
 
-    // Enable/disable submit button
     useEffect(() => {
         if (
             email !== '' &&
@@ -65,15 +62,15 @@ export default function Register() {
             lastName !== "" &&
             mobileNo !== "" &&
             !mobileError &&
+            !mobileExistsError &&
             !passwordError
         ) {
             setIsActive(true);
         } else {
             setIsActive(false);
         }
-    }, [email, password1, password2, firstName, lastName, mobileNo, mobileError, passwordError]);
+    }, [email, password1, password2, firstName, lastName, mobileNo, mobileError, mobileExistsError, passwordError]);
 
-    // Error handling for password match/empty
     useEffect(() => {
         if (email === '' || password1 === '' || password2 === '') {
             setError1(true);
@@ -112,22 +109,41 @@ export default function Register() {
         }
     };
 
+    const checkMobileExists = async (mobileNo) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/users/check-mobile`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mobileNo })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to check mobile number');
+            }
+
+            const data = await response.json();
+            return data.exists;
+        } catch (error) {
+            console.error('Error checking mobile number:', error);
+            throw error;
+        }
+    };
+
     const registerUser = async (e) => {
         e.preventDefault();
 
-        // Validate mobile number before sending
         if (!/^\d{11}$/.test(mobileNo)) {
             setMobileError("Mobile number must be exactly 11 digits.");
             return;
         }
 
-        // Validate password length before sending
         if (password1.length < 8) {
             setPasswordError("Password must be at least 8 characters.");
             return;
         }
 
-        // Validate password match before sending
         if (password1 !== password2) {
             setPasswordMatchError("Passwords do not match.");
             return;
@@ -143,6 +159,19 @@ export default function Register() {
                     text: 'Please use a different email address.',
                 });
                 return;
+            }
+
+            const mobileExists = await checkMobileExists(mobileNo);
+            if (mobileExists) {
+                setMobileExistsError('Mobile number already exists');
+                Swal.fire({
+                    title: 'Mobile number already exists',
+                    icon: 'error',
+                    text: 'Please use a different mobile number.',
+                });
+                return;
+            } else {
+                setMobileExistsError('');
             }
 
             const response = await fetch(`${process.env.REACT_APP_API_URL}/users/register`, {
@@ -241,17 +270,18 @@ export default function Register() {
                                         placeholder="Enter your 11 digit mobile number"
                                         value={mobileNo}
                                         onChange={e => {
-                                            // Only allow numbers
                                             if (e.target.value === "" || /^[0-9\b]+$/.test(e.target.value)) {
                                                 setMobileNo(e.target.value);
                                             }
-                                            setMobileError(""); // Clear error on change
+                                            setMobileError("");
+                                            setMobileExistsError("");
                                         }}
                                         maxLength={11}
                                         required
-                                        isInvalid={!!mobileError}
+                                        isInvalid={!!mobileError || !!mobileExistsError}
                                     />
                                     {mobileError && <Form.Control.Feedback type="invalid">{mobileError}</Form.Control.Feedback>}
+                                    {mobileExistsError && <Form.Control.Feedback type="invalid">{mobileExistsError}</Form.Control.Feedback>}
                                 </Form.Group>
 
                                 <Form.Group controlId="profilePicture">
@@ -306,7 +336,7 @@ export default function Register() {
 
                             </Card.Body>
                             <Card.Footer>
-                                {isActive === true && !mobileError && !passwordError && !passwordMatchError ?
+                                {isActive === true && !mobileError && !mobileExistsError && !passwordError && !passwordMatchError ?
                                     <Button
                                         variant="success"
                                         type="submit"
@@ -315,14 +345,14 @@ export default function Register() {
                                         Register
                                     </Button>
                                     :
-                                    error1 === true || error2 === true || mobileError || passwordError || passwordMatchError ?
+                                    error1 === true || error2 === true || mobileError || mobileExistsError || passwordError || passwordMatchError ?
                                         <Button
                                             variant="danger"
                                             type="submit"
                                             disabled
                                             block
                                         >
-                                            {mobileError ? mobileError : passwordError ? passwordError : passwordMatchError ? passwordMatchError : "Please enter your registration details"}
+                                            {mobileError ? mobileError : mobileExistsError ? mobileExistsError : passwordError ? passwordError : passwordMatchError ? passwordMatchError : "Please enter your registration details"}
                                         </Button>
                                         :
                                         <Button
@@ -343,4 +373,4 @@ export default function Register() {
                 </Col>
             </Row>
     );
-}   
+}
