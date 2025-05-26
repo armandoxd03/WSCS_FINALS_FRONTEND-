@@ -17,10 +17,8 @@ const ResetPassword = () => {
     confirmPassword: ''
   });
 
-  // Automatically validate fields on every change
   useEffect(() => {
     validateFields();
-    // eslint-disable-next-line
   }, [passwordData]);
 
   const handleClose = () => {
@@ -42,7 +40,6 @@ const ResetPassword = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPasswordData(prev => ({ ...prev, [name]: value }));
-    // No need to clear field errors here since validateFields (in useEffect) will handle it
   };
 
   const validateFields = () => {
