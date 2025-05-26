@@ -3,7 +3,6 @@ import { Container, Form, Button, Card, Row, Col, Image, Table } from "react-boo
 import { useHistory, useLocation, Redirect } from "react-router-dom";
 import Swal from "sweetalert2";
 
-// Helper to get random estimated delivery dates (between 2-5 days from now)
 function getDeliveryEstimate() {
   const today = new Date();
   const minDays = 2;
